@@ -82,7 +82,7 @@ const _badWord = [
   "Damn",
   "Ass",
 ];
-const _wotaWord = ["Jkt48, jeketi, jekate, anin, theater"];
+const _wotaWord = ["Jkt48", "jeketi", "jekate", "anin", "jkt", "theater"];
 
 client.on("ready", () => {
   console.log(`Logged in as ${client.user.tag}!`);
@@ -95,7 +95,7 @@ client.on("message", (msg) => {
     console.log(`Sender: ${msg.author.username}, Message: ${messageString}`);
 
     if (_badWord.some((word) => messageString.includes(word.toLowerCase()))) {
-      msg.channel.send(`Jangan kasar gitu dong sayang <@${id}> :frown:`);
+      msg.channel.send(`Jangan kasar gitu dong sayang <@${id}> :frowning:`);
     }
 
     if (_wotaWord.some((word) => messageString.includes(word.toLowerCase()))) {
