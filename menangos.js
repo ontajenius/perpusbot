@@ -88,23 +88,29 @@ client.on("ready", () => {
   console.log(`Logged in as ${client.user.tag}!`);
 });
 client.on("message", (msg) => {
-  const isBot = msg.author.bot;
-  const id = msg.author.id;
-  if (!isBot) {
-    const messageString = msg.content.toLowerCase();
+  try {
+    const isBot = msg.author.bot;
+    const id = msg.author.id;
+    if (!isBot) {
+      const messageString = msg.content.toLowerCase();
+
+      if (_badWord.some((word) => messageString.includes(word.toLowerCase()))) {
+        msg.channel.send(`Jangan kasar gitu dong sayang <@${id}> :frowning:`);
+      }
+
+      if (
+        _wotaWord.some((word) => messageString.includes(word.toLowerCase()))
+      ) {
+        msg.channel.send(`Wota si <@${id}> anjir :rofl:`);
+      }
+
+      if (messageString.includes("lantas")) {
+        msg.channel.send(`Jangan lantas mulu <@${id}> bangsat :rage:`);
+      }
+    }
+  } catch (error) {
     console.log(`Sender: ${msg.author.username}, Message: ${messageString}`);
-
-    if (_badWord.some((word) => messageString.includes(word.toLowerCase()))) {
-      msg.channel.send(`Jangan kasar gitu dong sayang <@${id}> :frowning:`);
-    }
-
-    if (_wotaWord.some((word) => messageString.includes(word.toLowerCase()))) {
-      msg.channel.send(`Wota si <@${id}> anjir :rofl:`);
-    }
-
-    if (messageString.includes("lantas")) {
-      msg.channel.send(`Jangan lantas mulu <@${id}> bangsat :rage:`);
-    }
+    console.log(`Error: ${error}`)
   }
 });
 client.login(process.env.TOKEN_MENANGOS);
