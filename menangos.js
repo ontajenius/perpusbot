@@ -1,5 +1,5 @@
 require("dotenv").config();
-const { Client } = require("discord.js");
+const { Client, RichEmbed } = require("discord.js");
 const client = new Client();
 const _badWord = [
   "Anjing",
@@ -87,6 +87,31 @@ const _wotaWord = ["Jkt48", "jeketi", "jekate", "anin", "jkt", "theater"];
 client.on("ready", () => {
   console.log(`Logged in as ${client.user.tag}!`);
 });
+
+client.on("messageDelete", (msg) => {
+  try {
+    const id = msg.author.id;
+    msg.channel.send(`Hayo <@${id}> kamu hapus apaan?`);
+    if (msg.attachments.size > 0) {
+      const attachments = msg.attachments.array();
+      for (const attachment of attachments) {
+        const repost = new RichEmbed()
+          .setAuthor(msg.author.tag, msg.author.displayAvatarURL)
+          .setImage(attachment.url)
+          .setTimestamp()
+          .setFooter("Foto yang dihapus")
+          .setDescription(`Pesan yg dihapus: ${msg.content}`);
+        msg.channel.send(repost);
+      }
+    } else {
+      msg.channel.send(`Yang dihapus: ${msg.content}`);
+    }
+  } catch (error) {
+    console.log(`Sender: ${msg.author.username}, Message: ${messageString}`);
+    console.log(`Error: ${error}`);
+  }
+});
+
 client.on("message", (msg) => {
   try {
     const isBot = msg.author.bot;
@@ -110,7 +135,7 @@ client.on("message", (msg) => {
     }
   } catch (error) {
     console.log(`Sender: ${msg.author.username}, Message: ${messageString}`);
-    console.log(`Error: ${error}`)
+    console.log(`Error: ${error}`);
   }
 });
 client.login(process.env.TOKEN_MENANGOS);
