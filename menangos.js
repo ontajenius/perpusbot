@@ -107,12 +107,13 @@ client.on("messageDelete", (msg) => {
       msg.channel.send(`Yang dihapus: ${msg.content}`);
     }
   } catch (error) {
-    console.log(`Sender: ${msg.author.username}, Message: ${messageString}`);
+    console.log(`Sender: ${msg.author.username}, Message: ${msg.content}`);
     console.log(`Error: ${error}`);
   }
 });
 
 client.on("message", (msg) => {
+
   try {
     const isBot = msg.author.bot;
     const id = msg.author.id;
@@ -134,7 +135,7 @@ client.on("message", (msg) => {
       }
     }
   } catch (error) {
-    console.log(`Sender: ${msg.author.username}, Message: ${messageString}`);
+    console.log(`Sender: ${msg.author.username}, Message: ${msg.content}`);
     console.log(`Error: ${error}`);
   }
 });

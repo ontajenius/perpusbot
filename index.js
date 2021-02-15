@@ -110,7 +110,7 @@ client.on("message", (msg) => {
 
       if (perpusRegex.test(msg.content)) {
         let regexResult = perpusRegex.exec(msg.content);
-        let videoCode = regexResult[2];
+        let videoCode = regexResult && regexResult.length > 0 ? regexResult[2] : "";
         let codeRegex = /([a-zA-z]{3,4}-\d{3,4})/;
         if (codeRegex.test(videoCode)) {
           const imageUrl = videoCode.replace("-", "");
@@ -131,8 +131,8 @@ client.on("message", (msg) => {
       }
     }
   } catch (err) {
-    console.log(`Sender: ${msg.author.username}, Message: ${messageString}`);
-    console.log(`Error: ${error}`);
+    console.log(`Sender: ${msg.author.username}, Message: ${msg.content}`);
+    console.log(`Error: ${err}`);
   }
 });
 client.login(process.env.TOKEN_DW);
