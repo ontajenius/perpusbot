@@ -1,28 +1,138 @@
-require('dotenv').config()
-const { Discord, RichEmbed, Client } = require('discord.js')
-const client = new Client()
+require("dotenv").config();
+const { RichEmbed, Client } = require("discord.js");
+const client = new Client();
 
-client.on('ready', () => {
-  console.log(`Logged in as ${client.user.tag}!`)
-})
-client.on('message', msg => {
-  let perpusRegex = /(\/perpus\s)(\S*)/m
-  let swearRegex = /(bangsat|bgzd|asu|goblog|gobs|anj)/m
+const _badWord = [
+  "Anjing",
+  "Babi",
+  "Kunyuk",
+  "Bangsat",
+  "Bajingan",
+  "Asu",
+  "Bangsat",
+  "Kampret",
+  "Kontol",
+  "Memek",
+  "Ngentot",
+  "Pentil",
+  "Perek",
+  "Pepek",
+  "Pecun",
+  "Bencong",
+  "Banci",
+  "Maho",
+  "Gila",
+  "Sinting",
+  "Tolol",
+  "Sarap",
+  "Setan",
+  "Lonte",
+  "Hencet",
+  "Taptei",
+  "Kampang",
+  "Pilat",
+  "Keparat",
+  "Bejad",
+  "Gembel",
+  "Brengsek",
+  "Tai",
+  "Anjrit",
+  "Bangsat",
+  "Fuck",
+  "Tetek",
+  "Ngulum",
+  "Jembut",
+  "Totong",
+  "Kolop",
+  "Pukimak",
+  "Bodat",
+  "Heang",
+  "Jancuk",
+  "Burit",
+  "Titit",
+  "Nenen",
+  "Bejat",
+  "Silit",
+  "Sempak",
+  "Fucking",
+  "Asshole",
+  "Bitch",
+  "Penis",
+  "Vagina",
+  "Klitoris",
+  "Kelentit",
+  "Borjong",
+  "Dancuk",
+  "Pantek",
+  "Taek",
+  "Itil",
+  "Teho",
+  "Bejat",
+  "Pantat",
+  "Bagudung",
+  "Babami",
+  "Kanciang",
+  "Bungul",
+  "Idiot",
+  "Kimak",
+  "Henceut",
+  "Kacuk",
+  "Blowjob",
+  "Pussy",
+  "Dick",
+  "Damn",
+  "Ass",
+];
+const _wotaWord = ["Jkt48", "jeketi", "jekate", "anin", "jkt", "theater"];
 
-  if(swearRegex.test(msg.content)) {
-    msg.reply('Jangan kasar gitu dong sayang :pepesad:')
+client.on("ready", () => {
+  console.log(`Logged in as ${client.user.tag}!`);
+});
+
+client.on("message", (msg) => {
+  try {
+    const isBot = msg.author.bot;
+    const id = msg.author.id;
+    let perpusRegex = /(\/perpus\s)(\S*)/m;
+
+    if (!isBot) {
+      const messageString = msg.content.toLowerCase();
+
+      if (_badWord.some((word) => messageString.includes(word.toLowerCase()))) {
+        msg.channel.send(`Jangan kasar gitu dong sayang <@${id}> :frowning:`);
+      }
+
+      if (
+        _wotaWord.some((word) => messageString.includes(word.toLowerCase()))
+      ) {
+        msg.channel.send(`Wota si <@${id}> anjir :rofl:`);
+      }
+
+      if (perpusRegex.test(msg.content)) {
+        let regexResult = perpusRegex.exec(msg.content);
+        let videoCode = regexResult[2];
+        let codeRegex = /([a-zA-z]{3,4}-\d{3,4})/;
+        if (codeRegex.test(videoCode)) {
+          const imageUrl = videoCode.replace("-", "");
+          let embed = new RichEmbed()
+            .setTitle(videoCode)
+            .setColor(0xff0000)
+            .setDescription("Search result for " + videoCode)
+            .setURL(
+              `https://www.javlibrary.com/en/vl_searchbyid.php?keyword=${videoCode}`
+            )
+            .setThumbnail(
+              `https://pics.dmm.co.jp/mono/movie/adult/${imageUrl}/${imageUrl}pl.jpg`
+            );
+          msg.channel.send(embed);
+        } else {
+          msg.channel.send(`Salah code nya bang <@${msg.author.id}>`);
+        }
+      }
+    }
+  } catch (err) {
+    console.log(`Sender: ${msg.author.username}, Message: ${messageString}`);
+    console.log(`Error: ${error}`);
   }
-
-  if(perpusRegex.test(msg.content)) {
-    let regexResult = perpusRegex.exec(msg.content)
-    let videoCode = regexResult[2]
-
-    let embed = new RichEmbed()
-      .setTitle(videoCode)
-      .setColor(0xFF0000)
-      .setDescription('Search result for ' + videoCode)
-      .setURL('https://www.google.com/search?q=' + videoCode)
-    msg.channel.send(embed)
-  }
-})
-client.login(process.env.TOKEN)
+});
+client.login(process.env.TOKEN_DW);
