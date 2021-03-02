@@ -2,6 +2,7 @@ require("dotenv").config();
 const cron = require('node-cron');
 const { format } = require("date-fns");
 const { Client, MessageEmbed, Intents } = require("discord.js");
+const axios = require("axios").default;
 const intents = new Intents(Intents.NON_PRIVILEGED);
 intents.add('GUILD_MEMBERS', 'GUILD_MESSAGES');
 const client = new Client({ ws: { intents: intents } });
@@ -91,7 +92,8 @@ const _badWord = [
 ];
 const _wotaWord = ["Jkt48", "jeketi", "jekate", "anin", "jkt", "theater"];
 const perpusRegex = /(\/perpus\s)(\S*)/m;
-
+const codeRegex = /([a-zA-z]{3,4}-\d{3,4})/;
+const pictureRegex = /\/\/pics.dmm.co.jp\/mono\/movie\/adult\/\S*.jpg/;
 
 client.on("ready", async () => {
   console.log(`Logged in as ${client.user?.tag}!`);
@@ -135,7 +137,7 @@ client.on("messageDelete", (msg) => {
   }
 });
 
-client.on("message", (msg) => {
+client.on("message", async (msg) => {
   try {
     const isBot = msg.author.bot;
     const id = msg.author.id;
@@ -165,10 +167,12 @@ client.on("message", (msg) => {
       if (perpusRegex.test(messageString)) {
         const regexResult = perpusRegex.exec(msg.content);
         const videoCode = regexResult && regexResult.length > 0 ? regexResult[2] : "";
-        const codeRegex = /([a-zA-z]{3,4}-\d{3,4})/;
+
         if (codeRegex.test(videoCode)) {
           msg.channel.send(`Yang ini bukan kodenya bang <@${id}>?`);
           const imageUrl = videoCode.replace("-", "");
+          const perpusData = await axios.get(`https://www.javlibrary.com/en/vl_searchbyid.php?keyword=${videoCode}`);
+          const imageRegexMatch = pictureRegex.exec(perpusData.data);
           let embed = new MessageEmbed()
             .setTitle(videoCode)
             .setColor(0xff0000)
@@ -177,7 +181,7 @@ client.on("message", (msg) => {
               `https://www.javlibrary.com/en/vl_searchbyid.php?keyword=${videoCode}`
             )
             .setThumbnail(
-              `https://pics.dmm.co.jp/mono/movie/adult/${imageUrl}/${imageUrl}pl.jpg`
+              imageRegexMatch.length > 0 ? `https:${imageRegexMatch[0]}` : `https://pics.dmm.co.jp/mono/movie/adult/${imageUrl}/${imageUrl}pl.jpg`
             );
 
           msg.channel.send(embed);
