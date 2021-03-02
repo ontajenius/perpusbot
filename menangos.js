@@ -90,6 +90,8 @@ const _badWord = [
   "Ass",
 ];
 const _wotaWord = ["Jkt48", "jeketi", "jekate", "anin", "jkt", "theater"];
+const perpusRegex = /(\/perpus\s)(\S*)/m;
+
 
 client.on("ready", async () => {
   console.log(`Logged in as ${client.user?.tag}!`);
@@ -157,6 +159,30 @@ client.on("message", (msg) => {
       if (messageString.includes('/marahin') && msg.mentions.members && msg.mentions.members.size > 0) {
         for (const memberId of msg.mentions.members.map((x) => x.id)) {
           msg.channel.send(generateRandomInsult(memberId))
+        }
+      }
+
+      if (perpusRegex.test(messageString)) {
+        const regexResult = perpusRegex.exec(msg.content);
+        const videoCode = regexResult && regexResult.length > 0 ? regexResult[2] : "";
+        const codeRegex = /([a-zA-z]{3,4}-\d{3,4})/;
+        if (codeRegex.test(videoCode)) {
+          msg.channel.send(`Yang ini bukan kodenya bang <@${id}>?`);
+          const imageUrl = videoCode.replace("-", "");
+          let embed = new MessageEmbed()
+            .setTitle(videoCode)
+            .setColor(0xff0000)
+            .setDescription("Search result for " + videoCode)
+            .setURL(
+              `https://www.javlibrary.com/en/vl_searchbyid.php?keyword=${videoCode}`
+            )
+            .setThumbnail(
+              `https://pics.dmm.co.jp/mono/movie/adult/${imageUrl}/${imageUrl}pl.jpg`
+            );
+
+          msg.channel.send(embed);
+        } else {
+          msg.channel.send(`Salah code nya bang <@${id}>`);
         }
       }
     }
