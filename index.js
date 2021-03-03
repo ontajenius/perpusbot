@@ -1,5 +1,7 @@
 require("dotenv").config();
-const { RichEmbed, Client } = require("discord.js");
+const { MessageEmbed, Client } = require("discord.js");
+const axios = require("axios").default;
+
 const client = new Client();
 
 const _badWord = [
@@ -84,16 +86,18 @@ const _badWord = [
   "Ass",
 ];
 const _wotaWord = ["Jkt48", "jeketi", "jekate", "anin", "jkt", "theater"];
+const perpusRegex = /(\/perpus\s)(\S*)/m;
+const codeRegex = /([a-zA-z]{3,4}-\d{3,4})/;
+const pictureRegex = /\/\/pics.dmm.co.jp\/mono\/movie\/adult\/\S*.jpg/;
 
 client.on("ready", () => {
   console.log(`Logged in as ${client.user.tag}!`);
 });
 
-client.on("message", (msg) => {
+client.on("message", async (msg) => {
   try {
     const isBot = msg.author.bot;
     const id = msg.author.id;
-    let perpusRegex = /(\/perpus\s)(\S*)/m;
 
     if (!isBot) {
       const messageString = msg.content.toLowerCase();
@@ -109,12 +113,15 @@ client.on("message", (msg) => {
       }
 
       if (perpusRegex.test(msg.content)) {
-        let regexResult = perpusRegex.exec(msg.content);
-        let videoCode = regexResult && regexResult.length > 0 ? regexResult[2] : "";
-        let codeRegex = /([a-zA-z]{3,4}-\d{3,4})/;
+        const regexResult = perpusRegex.exec(msg.content);
+        const videoCode = regexResult && regexResult.length > 0 ? regexResult[2] : "";
+
         if (codeRegex.test(videoCode)) {
+          msg.channel.send(`Yang ini bukan kodenya bang <@${id}>?`);
           const imageUrl = videoCode.replace("-", "");
-          let embed = new RichEmbed()
+          const perpusData = await axios.get(`https://www.javlibrary.com/en/vl_searchbyid.php?keyword=${videoCode}`);
+          const imageRegexMatch = pictureRegex.exec(perpusData.data);
+          let embed = new MessageEmbed()
             .setTitle(videoCode)
             .setColor(0xff0000)
             .setDescription("Search result for " + videoCode)
@@ -122,8 +129,9 @@ client.on("message", (msg) => {
               `https://www.javlibrary.com/en/vl_searchbyid.php?keyword=${videoCode}`
             )
             .setThumbnail(
-              `https://pics.dmm.co.jp/mono/movie/adult/${imageUrl}/${imageUrl}pl.jpg`
+              imageRegexMatch.length > 0 ? `https:${imageRegexMatch[0]}` : `https://pics.dmm.co.jp/mono/movie/adult/${imageUrl}/${imageUrl}pl.jpg`
             );
+
           msg.channel.send(embed);
         } else {
           msg.channel.send(`Salah code nya bang <@${msg.author.id}>`);
