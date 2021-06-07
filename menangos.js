@@ -108,7 +108,7 @@ const sendBirthday = async () => {
   if (birthdaysToday.length > 0) {
     for (const birthday of birthdaysToday) {
       generalChannel.send(`HBD ya sayangku <@${birthday.id}>, semoga panjang umur & sehat selalu :birthday: :partying_face:`);
-      generalChannel.send(`Kecup basah dari Ara buat <@${birthday.id}> :kissing_closed_eyes:`);
+      generalChannel.send(`Kecup basah dari Inay buat <@${birthday.id}> :kissing_closed_eyes:`);
     }
   }
 }
